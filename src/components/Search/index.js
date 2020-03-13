@@ -18,17 +18,10 @@ export default function Search() {
 
     // FETCH API DATA
     const getJokes = async (query) => {
-        const results = await fetch(`https://search-creativepassportmapsearch-xbszbelehmj4dl2w6prc2vt7mu.eu-west-1.cloudsearch.amazonaws.com/2013-01-01/search?q=${query}`, {
-            'statusCode': 200,
-            headers: {
-      
-                    "Access-Control-Allow-Origin": "http://localhost:8080",
-                    "Access-Control-Allow-Headers": "Content-Type",
-                    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
-                }
-          }
-        )
+        const results = await fetch(`http://localhost:3005/users?`+`q=${query}`)      
         const jokesData = await results.json()
+        console.log(jokesData);
+
         return jokesData.results
     }
 
@@ -59,16 +52,16 @@ export default function Search() {
         }
     }, [query])
 
-    // RENDER JOKES 
-    let jokeComponents = jokes.map((joke, index) => {
-      console.log(joke);
+    // // RENDER JOKES 
+    // let jokeComponents = jokes.map((joke, index) => {
+    //   console.log(joke);
       
-        return (
-            <li key={index}>
-                {joke.joke}
-            </li>
-        )
-    })
+    //     return (
+    //         <li key={index}>
+    //             {joke.joke}
+    //         </li>
+    //     )
+    // })
 
     // RENDER COMPONENT
     return (
@@ -84,7 +77,7 @@ export default function Search() {
                 />
             </div>     
 
-                {jokeComponents}
+                {jokes}
      
   
         </>
