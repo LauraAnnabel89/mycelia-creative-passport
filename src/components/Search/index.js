@@ -1,102 +1,202 @@
-import React, { useEffect, useReducer } from "react";
+
+import React, { useState, useEffect, useRef } from 'react'
 import SearchBar from "./SearchBar";
 import CloseButton from "../CloseButton";
-// import fetchUsers from "../Scene3D/data/fetchUsers";
+import fetchUsers from "../Scene3D/data/fetchUsers";
 import "./style.scss";
 
-const MOVIE_API_URL = "https://www.omdbapi.com/?s=man&apikey=4a3b711b";
+export default function Search() {
 
-const initialState = {
-  loading: true,
-  movies: [],
-  errorMessage: null,
-  searchOverlay: false
-};
+    // SET INITIAL STATE FOR query AND jokes
+    // CREATE REF FOR SEARCH INPUT
+    const [query, setQuery] = useState('')
+    const [jokes, setJokes] = useState([])
+    const focusSearch = useRef(null)
 
-const reducer = (state, action) => {
-  switch (action.type) {
-    case "SEARCH_MOVIES_REQUEST":
-      return {
-        ...state,
-        loading: true,
-        errorMessage: null
-      };
-    case "SEARCH_MOVIES_SUCCESS":
-      return {
-        ...state,
-        loading: false,
-        movies: action.payload
-      };
-    case "SEARCH_MOVIES_FAILURE":
-      return {
-        ...state,
-        loading: false,
-        errorMessage: action.error
-      };
-    default:
-      return state;
-  }
-};
+    // useEffect - FOCUS ON SEARCH INPUT
+    useEffect(() => {focusSearch.current.focus()}, [])
 
-const Search = () => {
-  const [state, dispatch] = useReducer(reducer, initialState);
+    // FETCH API DATA
+    const getJokes = async (query) => {
+        const results = await fetch(`https://search-creativepassportmapsearch-xbszbelehmj4dl2w6prc2vt7mu.eu-west-1.cloudsearch.amazonaws.com/2013-01-01/search?q=${query}`, {
+            headers: {
+            'Content-Type':'application/json',
+            'Accept': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
+            'Access-Control-Request-Method': 'GET, POST, DELETE, PUT, OPTIONS',
+          }
+        })
+        const jokesData = await results.json()
+        return jokesData.results
+    }
 
-  useEffect(() => {
-    fetch(MOVIE_API_URL)
-      .then(response => response.json())
-      .then(jsonResponse => {
-        dispatch({
-          type: "SEARCH_MOVIES_SUCCESS",
-          payload: jsonResponse.Search
-        });
-      });
-  }, []);
+    // PREVENTS RERENDER FLICKERING AS USER TYPES IN SEARCH
+    const sleep = (ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms))
+    }
 
-  const search = searchValue => {
-    dispatch({
-      type: "SEARCH_MOVIES_REQUEST"
-    });
+    // useEffect - ONLY RERENDERS WHEN query IS CHANGED
+    useEffect(() => {
+        let currentQuery = true
+        const controller = new AbortController()
 
-    fetch(`https://www.omdbapi.com/?s=${searchValue}&apikey=4a3b711b`)
-      .then(response => response.json())
-      .then(jsonResponse => {
-        if (jsonResponse.Response === "True") {
-          dispatch({
-            type: "SEARCH_MOVIES_SUCCESS",
-            payload: jsonResponse.Search
-          });
-        } else {
-          dispatch({
-            type: "SEARCH_MOVIES_FAILURE",
-            error: jsonResponse.Error
-          });
+        const loadJokes = async () => {
+            if (!query) return setJokes([])
+
+            await sleep(350) 
+            if (currentQuery) {
+                const jokes = await getJokes(query, controller)
+                setJokes(jokes)
+            }
         }
-      });
-  };
+        loadJokes()
 
-  const { movies, errorMessage, loading } = state;
+        return () => {
+            currentQuery = false
+            controller.abort()
+        }
+    }, [query])
 
-  return (
-    <>
-      <div className="search-overlay">
-        <SearchBar search={search} />
-        <div className="results">
-          {loading && !errorMessage ? (
-            <span>loading...</span>
-          ) : errorMessage ? (
-            <div className="errorMessage">{errorMessage}</div>
-          ) : (
-            movies.map((movie, index) => (
-              <h1 key={`${index}-${movie.Title}`} movie={movie}>
-                {movie.Title}
-              </h1>
-            ))
-          )}
-        </div>
-        <CloseButton />
-      </div>
-    </>
-  );
-};
+    // RENDER JOKES 
+    let jokeComponents = jokes.map((joke, index) => {
+      console.log(joke);
+      
+        return (
+            <li key={index}>
+                {joke.joke}
+            </li>
+        )
+    })
 
-export default Search;
+    // RENDER COMPONENT
+    return (
+        <>
+  
+            <div className="search-overlay">
+                <input
+                    type="email" 
+                    placeholder="Search for a Joke..." 
+                    ref={focusSearch}
+                    onChange={(e) => setQuery(e.target.value)}
+                    value={query} 
+                />
+            </div>     
+
+                {jokeComponents}
+     
+  
+        </>
+    )
+}
+
+
+
+
+
+
+
+
+
+
+// import React, { useEffect, useReducer } from "react";
+// import SearchBar from "./SearchBar";
+// import CloseButton from "../CloseButton";
+// // import fetchUsers from "../Scene3D/data/fetchUsers";
+// import "./style.scss";
+
+// const MOVIE_API_URL = "https://eus483eenc.execute-api.eu-west-2.amazonaws.com/TestGate/get-users";
+
+// const initialState = {
+//   loading: true,
+//   users: [],
+//   errorMessage: null,
+//   searchOverlay: false
+// };
+
+// const reducer = (state, action) => {
+//   switch (action.type) {
+//     case "SEARCH_MOVIES_REQUEST":
+//       return {
+//         ...state,
+//         loading: true,
+//         errorMessage: null
+//       };
+//     case "SEARCH_MOVIES_SUCCESS":
+//       return {
+//         ...state,
+//         loading: false,
+//         movies: action.payload
+//       };
+//     case "SEARCH_MOVIES_FAILURE":
+//       return {
+//         ...state,
+//         loading: false,
+//         errorMessage: action.error
+//       };
+//     default:
+//       return state;
+//   }
+// };
+
+// const Search = () => {
+//   const [state, dispatch] = useReducer(reducer, initialState);
+
+//   useEffect(() => {
+//     fetch(MOVIE_API_URL)
+//       .then(response => response.json())
+//       .then(jsonResponse => {
+//         dispatch({
+//           type: "SEARCH_MOVIES_SUCCESS",
+//           payload: jsonResponse.Search
+//         });
+//       });
+//   }, []);
+
+//   const search = searchValue => {
+//     dispatch({
+//       type: "SEARCH_MOVIES_REQUEST"
+//     });
+
+//     fetch(`https://eus483eenc.execute-api.eu-west-2.amazonaws.com/TestGate/get-users?s=${searchValue}`)
+//       .then(response => response.json())
+//       .then(console.log(users))
+//       .then(jsonResponse => {
+//         if (jsonResponse.Response === "True") {
+//           dispatch({
+//             type: "SEARCH_MOVIES_SUCCESS",
+//             payload: jsonResponse.Search
+//           });
+//         } else {
+//           dispatch({
+//             type: "SEARCH_MOVIES_FAILURE",
+//             error: jsonResponse.Error
+//           });
+//         }
+//       });
+//   };
+
+//   const { users, errorMessage, loading } = state;
+
+//   return (
+//     <>
+//       <div className="search-overlay">
+//         <SearchBar search={search} />
+//         <div className="results">
+//         {loading && !errorMessage ? (
+//             <span>loading...</span>
+//           ) : errorMessage ? (
+//             <div className="errorMessage">{errorMessage}</div>
+//           ) : (
+//             users.map((user, index) => (
+//                {user}
+//             ))
+//           )}
+//         </div>
+//         <CloseButton />
+//       </div>
+//     </>
+//   );
+// };
+
+// export default Search;
