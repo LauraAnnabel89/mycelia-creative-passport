@@ -18,9 +18,9 @@ export default function Search() {
 
     // FETCH API DATA
     const getJokes = async (query) => {
-        const results = await fetch(`http://localhost:3005/users?`+`q=${query}`)      
+        const results = await fetch(`http://localhost:3005/search?` + `${query}`)      
         const jokesData = await results.json()
-        console.log(jokesData);
+        console.log("this is the results", results, "this is the data", jokesData);
 
         return jokesData.results
     }
