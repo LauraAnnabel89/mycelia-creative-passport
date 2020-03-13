@@ -19,14 +19,15 @@ export default function Search() {
     // FETCH API DATA
     const getJokes = async (query) => {
         const results = await fetch(`https://search-creativepassportmapsearch-xbszbelehmj4dl2w6prc2vt7mu.eu-west-1.cloudsearch.amazonaws.com/2013-01-01/search?q=${query}`, {
+            'statusCode': 200,
             headers: {
-            'Content-Type':'application/json',
-            'Accept': 'application/json',
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept, Authorization',
-            'Access-Control-Request-Method': 'GET, POST, DELETE, PUT, OPTIONS',
+      
+                    "Access-Control-Allow-Origin": "http://localhost:8080",
+                    "Access-Control-Allow-Headers": "Content-Type",
+                    "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+                }
           }
-        })
+        )
         const jokesData = await results.json()
         return jokesData.results
     }
