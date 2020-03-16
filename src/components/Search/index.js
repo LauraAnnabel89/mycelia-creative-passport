@@ -74,7 +74,7 @@ export default function Search() {
                 />
             </div>     
 
-            <ul style={{color:"white"}}>
+            <ul className="results">
                 {usersComponents}
             </ul>
             <CloseButton />

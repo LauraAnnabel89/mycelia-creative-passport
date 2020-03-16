@@ -16,11 +16,15 @@
 }
 
 .results {
+  color: white;
+  list-style-type: none;
+  padding: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   line-height: 15px;
+  
 
   h1 {
     font-weight: 200;
