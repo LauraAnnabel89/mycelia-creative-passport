@@ -3,9 +3,9 @@ var request = require('request');
 var app = express();
 
 app.get('/search', function(req, res, query){ 
-    request(`https://search-creativepassportmapsearch-xbszbelehmj4dl2w6prc2vt7mu.eu-west-1.cloudsearch.amazonaws.com/2013-01-01/search?`+ req.query.q, function (error, response, body) { 
+    request(`https://search-creativepassportmapsearch-xbszbelehmj4dl2w6prc2vt7mu.eu-west-1.cloudsearch.amazonaws.com/2013-01-01/search?q=`+ req.query.q, function (error, response, body) { 
       if (!error && response.statusCode === 200) { 
-        console.log(body); 
+        console.log(req.query.q, body); 
         res.send(body); 
       } 
      }); 
