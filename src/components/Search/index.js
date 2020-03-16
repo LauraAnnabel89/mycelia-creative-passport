@@ -1,28 +1,27 @@
 
 import React, { useState, useEffect, useRef } from 'react'
-import SearchBar from "./SearchBar";
 import CloseButton from "../CloseButton";
-import fetchUsers from "../Scene3D/data/fetchUsers";
 import "./style.scss";
 
 export default function Search() {
 
-    // SET INITIAL STATE FOR query AND jokes
+    // SET INITIAL STATE FOR query AND users
     // CREATE REF FOR SEARCH INPUT
     const [query, setQuery] = useState('')
-    const [jokes, setJokes] = useState([])
+    const [users, setUsers] = useState([])
     const focusSearch = useRef(null)
 
     // useEffect - FOCUS ON SEARCH INPUT
     useEffect(() => {focusSearch.current.focus()}, [])
 
     // FETCH API DATA
-    const getJokes = async (query) => {
-        const results = await fetch(`http://localhost:3005/search?q=${query}`)      
-        const jokesData = await results.json()
-        console.log("this is the results", results, "this is the data", jokesData);
-
-        return jokesData.results
+    const getusers = async (query) => {
+        const results = await fetch(`http://localhost:3005/search?q=${query}`, {
+            headers: {'accept': 'application/json'}
+        })
+        const usersData = await results.json()
+        
+        return usersData.hits.hit
     }
 
     // PREVENTS RERENDER FLICKERING AS USER TYPES IN SEARCH
@@ -35,16 +34,16 @@ export default function Search() {
         let currentQuery = true
         const controller = new AbortController()
 
-        const loadJokes = async () => {
-            if (!query) return setJokes([])
+        const loadusers = async () => {
+            if (!query) return setUsers([])
 
             await sleep(350) 
             if (currentQuery) {
-                const jokes = await getJokes(query, controller)
-                setJokes(jokes)
+                const users = await getusers(query, controller)
+                setUsers(users)
             }
         }
-        loadJokes()
+        loadusers()
 
         return () => {
             currentQuery = false
@@ -52,35 +51,34 @@ export default function Search() {
         }
     }, [query])
 
-    // // RENDER JOKES 
-    // let jokeComponents = jokes.map((joke, index) => {
-    //   console.log(joke);
-      
-    //     return (
-    //         <li key={index}>
-    //             {joke.joke}
-    //         </li>
-    //     )
-    // })
+    // RENDER users 
+    let usersComponents = users.map((user, index) => {
+        return (
+            <li key={index}>
+                {user.fields.name}
+            </li>
+        )
+    })
 
     // RENDER COMPONENT
     return (
-        <>
-  
-            <div className="search-overlay">
-                <input
+        <div className="search-overlay">
+
+            <div className="search-bar" id="search-bar">
+                <input 
                     type="email" 
-                    placeholder="Search for a Joke..." 
+                    placeholder="Search..." 
                     ref={focusSearch}
                     onChange={(e) => setQuery(e.target.value)}
                     value={query} 
                 />
             </div>     
 
-                {jokes}
-     
-  
-        </>
+            <ul style={{color:"white"}}>
+                {usersComponents}
+            </ul>
+            <CloseButton />
+        </div>
     )
 }
 
@@ -93,104 +91,82 @@ export default function Search() {
 
 
 
-// import React, { useEffect, useReducer } from "react";
-// import SearchBar from "./SearchBar";
+
+
+
+
+// import React, { useState, useEffect, useRef } from 'react'
 // import CloseButton from "../CloseButton";
-// // import fetchUsers from "../Scene3D/data/fetchUsers";
 // import "./style.scss";
 
-// const MOVIE_API_URL = "https://eus483eenc.execute-api.eu-west-2.amazonaws.com/TestGate/get-users";
+// export default function Search() {
 
-// const initialState = {
-//   loading: true,
-//   users: [],
-//   errorMessage: null,
-//   searchOverlay: false
-// };
+//     const [query, setQuery] = useState('')
+//     const [users, setUsers] = useState([])
+//     const focusSearch = useRef(null)
 
-// const reducer = (state, action) => {
-//   switch (action.type) {
-//     case "SEARCH_MOVIES_REQUEST":
-//       return {
-//         ...state,
-//         loading: true,
-//         errorMessage: null
-//       };
-//     case "SEARCH_MOVIES_SUCCESS":
-//       return {
-//         ...state,
-//         loading: false,
-//         movies: action.payload
-//       };
-//     case "SEARCH_MOVIES_FAILURE":
-//       return {
-//         ...state,
-//         loading: false,
-//         errorMessage: action.error
-//       };
-//     default:
-//       return state;
-//   }
-// };
+//     useEffect(() => { focusSearch.current.focus() }, [])
 
-// const Search = () => {
-//   const [state, dispatch] = useReducer(reducer, initialState);
+//     const getUsers = async (query) => {
+//         const results = await fetch(`http://localhost:3005/search?q=${query}`)
+//         const usersData = await results.json()
+//         console.log("this is the results", results, "this is the data", usersData);
 
-//   useEffect(() => {
-//     fetch(MOVIE_API_URL)
-//       .then(response => response.json())
-//       .then(jsonResponse => {
-//         dispatch({
-//           type: "SEARCH_MOVIES_SUCCESS",
-//           payload: jsonResponse.Search
-//         });
-//       });
-//   }, []);
+//         return usersData.results
+//     }
 
-//   const search = searchValue => {
-//     dispatch({
-//       type: "SEARCH_MOVIES_REQUEST"
-//     });
+//     const sleep = (ms) => {
+//         return new Promise(resolve => setTimeout(resolve, ms))
+//     }
 
-//     fetch(`https://eus483eenc.execute-api.eu-west-2.amazonaws.com/TestGate/get-users?s=${searchValue}`)
-//       .then(response => response.json())
-//       .then(console.log(users))
-//       .then(jsonResponse => {
-//         if (jsonResponse.Response === "True") {
-//           dispatch({
-//             type: "SEARCH_MOVIES_SUCCESS",
-//             payload: jsonResponse.Search
-//           });
-//         } else {
-//           dispatch({
-//             type: "SEARCH_MOVIES_FAILURE",
-//             error: jsonResponse.Error
-//           });
+//     useEffect(() => {
+//         let currentQuery = true
+//         const controller = new AbortController()
+
+//         const loadUsers = async () => {
+//             if (!query) return setUsers([])
+
+//             await sleep(350)
+//             if (currentQuery) {
+//                 const users = await getUsers(query, controller)
+//                 setUsers(users)
+//             }
 //         }
-//       });
-//   };
+//         loadUsers()
 
-//   const { users, errorMessage, loading } = state;
+//         return () => {
+//             currentQuery = false
+//             controller.abort()
+//         }
+//     }, [query])
 
-//   return (
-//     <>
-//       <div className="search-overlay">
-//         <SearchBar search={search} />
-//         <div className="results">
-//         {loading && !errorMessage ? (
-//             <span>loading...</span>
-//           ) : errorMessage ? (
-//             <div className="errorMessage">{errorMessage}</div>
-//           ) : (
-//             users.map((user, index) => (
-//                {user}
-//             ))
-//           )}
+
+
+//     return (
+//         <div className="search-overlay">
+
+//             <div className="search-bar">
+//                 <input
+//                     type="email"
+//                     placeholder="Search..."
+//                     ref={focusSearch}
+//                     onChange={(e) => setQuery(e.target.value)}
+//                     value={query}
+//                 />
+//             </div>
+
+//             <div className="results">
+//                 {users.map((user, index) => {
+//                     return (
+//                         <li>
+//                             {user.name}
+//                         </li>
+//                     )
+//                 })}
+//             </div>
+
+//             <CloseButton />
+
 //         </div>
-//         <CloseButton />
-//       </div>
-//     </>
-//   );
-// };
-
-// export default Search;
+//     )
+// }
