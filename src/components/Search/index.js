@@ -55,7 +55,7 @@ export default function Search() {
     let usersComponents = users.map((user, index) => {
         return (
             <li key={index}>
-                {user.fields.name}
+               <a href={user.fields.fullPassport}><h1>{user.fields.name}</h1></a>
             </li>
         )
     })
