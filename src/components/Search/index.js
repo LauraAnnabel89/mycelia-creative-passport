@@ -12,15 +12,20 @@ export default function Search() {
     const focusSearch = useRef(null)
 
     // useEffect - FOCUS ON SEARCH INPUT
-    useEffect(() => {focusSearch.current.focus()}, [])
+    useEffect(() => { focusSearch.current.focus() }, [])
 
     // FETCH API DATA
     const getusers = async (query) => {
         const results = await fetch(`http://localhost:3005/search?q=${query}`, {
-            headers: {'accept': 'application/json'}
+            headers: {
+                'Content-Type': 'application/json',
+                "Access-Control-Allow-Origin": "http://localhost:3005",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "OPTIONS,POST,GET"
+            }
         })
         const usersData = await results.json()
-        
+
         return usersData.hits.hit
     }
 
@@ -37,7 +42,7 @@ export default function Search() {
         const loadusers = async () => {
             if (!query) return setUsers([])
 
-            await sleep(350) 
+            await sleep(350)
             if (currentQuery) {
                 const users = await getusers(query, controller)
                 setUsers(users)
@@ -54,8 +59,8 @@ export default function Search() {
     // RENDER users 
     let usersComponents = users.map((user, index) => {
         return (
-            <li key={index}>
-               <a href={user.fields.fullPassport}><h1>{user.fields.name}</h1></a>
+            <li key={user.id}>
+                <a href={user.fields.fullPassport}><h1>{user.fields.name}</h1></a>
             </li>
         )
     })
@@ -65,14 +70,14 @@ export default function Search() {
         <div className="search-overlay">
 
             <div className="search-bar" id="search-bar">
-                <input 
-                    type="email" 
-                    placeholder="Search..." 
+                <input
+                    type="email"
+                    placeholder="Search..."
                     ref={focusSearch}
                     onChange={(e) => setQuery(e.target.value)}
-                    value={query} 
+                    value={query}
                 />
-            </div>     
+            </div>
 
             <ul className="results">
                 {usersComponents}

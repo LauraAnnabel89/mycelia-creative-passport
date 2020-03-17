@@ -1,6 +1,9 @@
-var express = require('express'); 
-var request = require('request'); 
-var app = express();
+const express = require('express'); 
+const cors = require('cors')
+const request = require('request'); 
+const app = express();
+app.use(cors())
+
 
 app.get('/search', function(req, res, query){ 
     request(`https://search-creativepassportmapsearch-xbszbelehmj4dl2w6prc2vt7mu.eu-west-1.cloudsearch.amazonaws.com/2013-01-01/search?q=`+ req.query.q, function (error, response, body) { 
