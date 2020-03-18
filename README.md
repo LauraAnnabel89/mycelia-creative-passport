@@ -31,6 +31,15 @@ yarn install
 yarn start
 ```
 
+In development/to test locally
+* Ensure the URL in Components > Search > index.js is set to (line 17) `http://localhost:3005/search?q=${query}`
+* The server.js file at root will point to this, in production this will be hosted externally
+* Then in addition to yarn start, in another terminal run
+
+```
+yarn server
+```
+
 ## Contributors
 
 Thanks to the following people who have contributed to this project:

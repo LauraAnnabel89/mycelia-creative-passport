@@ -82,13 +82,12 @@ export default function CustomizedExpansionPanels(
             <h2 className="user_name">{props.name}</h2>
           </div>
           <div className="info-container">
-            <p className="vocation">{props.profession}</p>
+            <p className="skills">{props.skills}</p>
             <p className="quote">"{props.favouriteQuote}"</p>
             <p className="email">{props.email}</p>
-            <p className="number">{props.number}</p>
             <p className="website">{props.website}</p>
-            <a href={props.fullProfle} className="viewfull">
-              {props.fullProfle ? "View Full Passport" : ""}
+            <a href={props.publicURL} className="viewfull">
+              {props.publicURL ? "View Full Passport" : ""}
             </a>
           </div>
         </ExpansionPanelDetails>

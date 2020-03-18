@@ -7,14 +7,13 @@ export default function Search() {
 
     const [query, setQuery] = useState('')
     const [users, setUsers] = useState([])
-    const [error, setError] = useState(false);
     const focusSearch = useRef(null)
 
     useEffect(() => { focusSearch.current.focus() }, [])
 
+
+    // update the url here `YOURURL/search?q=${query}`,
     const getusers = async (query) => {
-        setError(false);
-        try {
             const results = await fetch(`http://localhost:3005/search?q=${query}`, {
                 headers: {
                     "Access-Control-Allow-Origin": "*",
@@ -24,11 +23,7 @@ export default function Search() {
             })
             const usersData = await results.json()
             return usersData.hits.hit
-        }
-        catch (error) {
-            setError(true);
-        }
-
+        
     }
 
 
@@ -57,10 +52,10 @@ export default function Search() {
         }
     }, [query])
 
-    let usersComponents = users.map((user, index) => {
+    let usersComponents = users.map((user) => {
         return (
             <li key={user.id}>
-                <a href={user.fields.fullPassport}><h1>{user.fields.name}</h1></a>
+                <a href={user.fields.publicURL}><h1>{user.fields.name}</h1></a>
             </li>
         )
     })
